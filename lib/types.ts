@@ -1,9 +1,9 @@
 export interface Weather {
-	icon: string;
+	icon: IconMapValue;
 	title: string;
 	time: string;
 	wind: string;
-	sunrise: string;
+	cloud: string;
 	humidity: string;
 	temperature: string;
 	locationName: string;
@@ -62,3 +62,5 @@ export interface Wind {
 	speed: number;
 	deg: number;
 }
+
+export type IconMapValue = 'sunny' | 'cloudy' | 'showers' | 'rain' | 'thunderstorms' | 'windySnow' | 'fog';

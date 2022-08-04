@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { humaniseSunrise, formatTime } from '../utils/formatter';
+import { formatTime } from '../utils/formatter';
 import type { Weather, RawWeather, Coord } from '../types';
 
 const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
@@ -45,6 +45,7 @@ export function useWeather(options: UseWeatherOptions) {
 				// convert the api url to `URL` to make append search params easy and readable
 				const apiEndpoint = new URL(API_URL);
 				apiEndpoint.searchParams.append('appid', options.appId);
+				apiEndpoint.searchParams.append('units', 'metric');
 
 				if (options.lat) {
 					// since `lat` is a number, we need to convert it to string so we can use the `append` method
@@ -89,18 +90,18 @@ export function transform(rawData: RawWeather): Weather {
 
 	return {
 		title: weather.description,
+		cloud: `${rawData.clouds.all}%`,
 		time: formatTime(rawData.dt),
 		wind: `${rawData.wind.speed} km/h`,
 		humidity: `${rawData.main.humidity}%`,
-		sunrise: humaniseSunrise(rawData.sys.sunrise),
-		temperature: `${rawData.main.temp}°C`,
+		temperature: `${Math.ceil(rawData.main.temp)}°C`,
 		locationName: rawData.name,
 		icon: iconsMap[weather.icon] ?? 'sunny',
 	};
 }
 
 // https://github.com/farahat80/react-open-weather/blob/master/src/js/providers/openweather/iconsMap.js#L3-L22
-const iconsMap: Record<string, string> = {
+const iconsMap: Record<string, 'sunny' | 'cloudy' | 'showers' | 'rain' | 'thunderstorms' | 'windySnow' | 'fog'> = {
 	'01d': 'sunny',
 	'02d': 'cloudy',
 	'03d': 'cloudy',
