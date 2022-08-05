@@ -7,6 +7,7 @@ import { useCurrentPosition, useWeather } from './lib/hooks';
 import type { IconMapValue } from './lib/types';
 
 const appId = Constants?.manifest?.extra?.appId;
+const additioinalInfo = ['wind', 'humidity', 'cloud'] as const;
 
 function Weather() {
 	const { coords, error: geoError } = useCurrentPosition();
@@ -54,20 +55,12 @@ function Weather() {
 
 			<View className='items-center'>
 				<View className='flex-row bg-gray-200 p-6 rounded-full'>
-					<View className='px-4'>
-						<Text className='font-semibold'>{data.wind}</Text>
-						<Text className='font-light'>Wind</Text>
-					</View>
-
-					<View className='px-4'>
-						<Text className='font-semibold'>{data.humidity}</Text>
-						<Text className='font-light'>Humidity</Text>
-					</View>
-
-					<View className='px-4'>
-						<Text className='font-semibold'>{data.cloud}</Text>
-						<Text className='font-light'>Cloud</Text>
-					</View>
+					{additioinalInfo.map(val => (
+						<View className='px-4'>
+							<Text className='font-semibold'>{data[val]}</Text>
+							<Text className='font-light capitalize'>{val}</Text>
+						</View>
+					))}
 				</View>
 			</View>
 		</View>
