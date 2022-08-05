@@ -42,8 +42,7 @@ function Weather() {
 
 	return (
 		<View className='flex-1 container mx-auto justify-around text-center'>
-			<View className='flex-row justify-between items-center px-6'>
-				<Text className='border border-gray-500 px-3 py-1'>{data.locationName}</Text>
+			<View className='flex-row-reverse px-6'>
 				<Text>{data.time}</Text>
 			</View>
 
@@ -54,18 +53,18 @@ function Weather() {
 			</View>
 
 			<View className='items-center'>
-				<View className='flex-row space-x-12 bg-gray-200 p-6 rounded-full'>
-					<View>
+				<View className='flex-row bg-gray-200 p-6 rounded-full'>
+					<View className='px-4'>
 						<Text className='font-semibold'>{data.wind}</Text>
 						<Text className='font-light'>Wind</Text>
 					</View>
 
-					<View>
+					<View className='px-4'>
 						<Text className='font-semibold'>{data.humidity}</Text>
 						<Text className='font-light'>Humidity</Text>
 					</View>
 
-					<View>
+					<View className='px-4'>
 						<Text className='font-semibold'>{data.cloud}</Text>
 						<Text className='font-light'>Cloud</Text>
 					</View>

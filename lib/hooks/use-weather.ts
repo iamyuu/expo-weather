@@ -1,8 +1,8 @@
 import * as React from 'react';
 import { formatTime } from '../utils/formatter';
-import type { Weather, RawWeather, Coord } from '../types';
+import type { Weather, ResponseWeather, Coord, IconMapValue } from '../types';
 
-const API_URL = 'https://api.openweathermap.org/data/2.5/weather';
+const API_URL = 'https://api.openweathermap.org/data/2.5';
 
 type UseWeatherOptions = Partial<Coord> & { appId: string };
 
@@ -43,9 +43,10 @@ export function useWeather(options: UseWeatherOptions) {
 
 			try {
 				// convert the api url to `URL` to make append search params easy and readable
-				const apiEndpoint = new URL(API_URL);
+				const apiEndpoint = new URL(`${API_URL}/onecall`);
 				apiEndpoint.searchParams.append('appid', options.appId);
 				apiEndpoint.searchParams.append('units', 'metric');
+				apiEndpoint.searchParams.append('exclude', ['minutely', 'daily'].join(','));
 
 				if (options.lat) {
 					// since `lat` is a number, we need to convert it to string so we can use the `append` method
@@ -58,11 +59,11 @@ export function useWeather(options: UseWeatherOptions) {
 				}
 
 				const response = await fetch(apiEndpoint);
-				const responseJSON = (await response.json()) as unknown as RawWeather;
+				const responseJSON = (await response.json()) as unknown as ResponseWeather;
 
 				dispatch({
 					status: 'resolved',
-					data: transform(responseJSON),
+					data: transform(responseJSON.current),
 					error: null,
 				});
 			} catch (error) {
@@ -85,23 +86,22 @@ export function useWeather(options: UseWeatherOptions) {
 /**
  * Transforming OpenWeather response
  */
-export function transform(rawData: RawWeather): Weather {
+export function transform(rawData: ResponseWeather['current']): Weather {
 	const [weather] = rawData.weather;
 
 	return {
 		title: weather.description,
-		cloud: `${rawData.clouds.all}%`,
+		cloud: `${rawData.clouds}%`,
 		time: formatTime(rawData.dt),
-		wind: `${rawData.wind.speed} km/h`,
-		humidity: `${rawData.main.humidity}%`,
-		temperature: `${Math.ceil(rawData.main.temp)}°C`,
-		locationName: rawData.name,
+		wind: `${rawData.wind_speed} km/h`,
+		humidity: `${rawData.humidity}%`,
+		temperature: `${Math.ceil(rawData.temp)}°C`,
 		icon: iconsMap[weather.icon] ?? 'sunny',
 	};
 }
 
 // https://github.com/farahat80/react-open-weather/blob/master/src/js/providers/openweather/iconsMap.js#L3-L22
-const iconsMap: Record<string, 'sunny' | 'cloudy' | 'showers' | 'rain' | 'thunderstorms' | 'windySnow' | 'fog'> = {
+const iconsMap: Record<string, IconMapValue> = {
 	'01d': 'sunny',
 	'02d': 'cloudy',
 	'03d': 'cloudy',
