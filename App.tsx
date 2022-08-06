@@ -7,6 +7,7 @@ import { useCurrentPosition, useWeather } from './lib/hooks';
 import type { IconMapValue } from './lib/types';
 
 const appId = Constants?.manifest?.extra?.appId;
+const additioinalInfo = ['wind', 'humidity', 'cloud'] as const;
 
 function Weather() {
 	const { coords, error: geoError } = useCurrentPosition();
@@ -41,34 +42,26 @@ function Weather() {
 	}
 
 	return (
-		<View className='flex-1 container mx-auto justify-around text-center'>
+		<View className='flex-1 container justify-around'>
 			<View className='flex-row justify-between items-center px-6'>
 				<Text className='border border-gray-500 px-3 py-1'>{data.locationName}</Text>
 				<Text>{data.time}</Text>
 			</View>
 
-			<View>
+			<View className='mx-auto'>
 				<WeatherIcon icon={data.icon} />
-				<Text className='font-bold text-3xl'>{data.temperature}</Text>
-				<Text className='font-light mt-2'>{data.title}</Text>
+				<Text className='font-bold text-3xl text-center'>{data.temperature}</Text>
+				<Text className='font-light mt-2 text-center'>{data.title}</Text>
 			</View>
 
 			<View className='items-center'>
 				<View className='flex-row space-x-12 bg-gray-200 p-6 rounded-full'>
-					<View>
-						<Text className='font-semibold'>{data.wind}</Text>
-						<Text className='font-light'>Wind</Text>
-					</View>
-
-					<View>
-						<Text className='font-semibold'>{data.humidity}</Text>
-						<Text className='font-light'>Humidity</Text>
-					</View>
-
-					<View>
-						<Text className='font-semibold'>{data.cloud}</Text>
-						<Text className='font-light'>Cloud</Text>
-					</View>
+					{additioinalInfo.map(val => (
+						<View>
+							<Text className='font-semibold text-center'>{data[val]}</Text>
+							<Text className='font-light capitalize text-center'>{val}</Text>
+						</View>
+					))}
 				</View>
 			</View>
 		</View>
