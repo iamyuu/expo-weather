@@ -42,23 +42,23 @@ function Weather() {
 	}
 
 	return (
-		<View className='flex-1 container mx-auto justify-around text-center'>
+		<View className='flex-1 container justify-around'>
 			<View className='flex-row-reverse px-6'>
 				<Text>{data.time}</Text>
 			</View>
 
-			<View>
+			<View className='mx-auto'>
 				<WeatherIcon icon={data.icon} />
-				<Text className='font-bold text-3xl'>{data.temperature}</Text>
-				<Text className='font-light mt-2'>{data.title}</Text>
+				<Text className='font-bold text-3xl text-center'>{data.temperature}</Text>
+				<Text className='font-light mt-2 text-center'>{data.title}</Text>
 			</View>
 
 			<View className='items-center'>
-				<View className='flex-row bg-gray-200 p-6 rounded-full'>
+				<View className='flex-row space-x-12 bg-gray-200 p-6 rounded-full'>
 					{additioinalInfo.map(val => (
-						<View className='px-4'>
-							<Text className='font-semibold'>{data[val]}</Text>
-							<Text className='font-light capitalize'>{val}</Text>
+						<View key={val}>
+							<Text className='font-semibold text-center'>{data[val]}</Text>
+							<Text className='font-light capitalize text-center'>{val}</Text>
 						</View>
 					))}
 				</View>

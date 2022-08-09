@@ -43,10 +43,10 @@ export function useWeather(options: UseWeatherOptions) {
 
 			try {
 				// convert the api url to `URL` to make append search params easy and readable
-				const apiEndpoint = new URL(`${API_URL}/onecall`);
+				const apiEndpoint = new URL('/onecall', API_URL);
 				apiEndpoint.searchParams.append('appid', options.appId);
 				apiEndpoint.searchParams.append('units', 'metric');
-				apiEndpoint.searchParams.append('exclude', ['minutely', 'daily'].join(','));
+				apiEndpoint.searchParams.append('exclude', ['minutely', 'daily', 'alerts'].join(','));
 
 				if (options.lat) {
 					// since `lat` is a number, we need to convert it to string so we can use the `append` method
