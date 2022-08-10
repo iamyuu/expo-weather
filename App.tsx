@@ -1,15 +1,15 @@
+import * as React from 'react';
 import Constants from 'expo-constants';
 import { StatusBar } from 'expo-status-bar';
-import { View, Text } from 'react-native';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import FontistoIcon from '@expo/vector-icons/Fontisto';
+import { View, Text, TouchableOpacity } from 'react-native';
+import { WeatherIcon, ModalFormSuggestEdit } from './lib/components';
 import { useCurrentPosition, useWeather } from './lib/hooks';
-import type { IconMapValue } from './lib/types';
 
 const appId = Constants?.manifest?.extra?.appId;
 const additioinalInfo = ['wind', 'humidity', 'cloud'] as const;
 
 function Weather() {
+	const [isOpenModal, toggleModal] = React.useReducer(prevState => !prevState, false);
 	const { coords, error: geoError } = useCurrentPosition();
 	const { data, error: httpError } = useWeather({
 		lat: coords?.latitude,
@@ -26,7 +26,7 @@ function Weather() {
 
 	if (hasError) {
 		return (
-			<View className='flex-1 items-center justify-center bg-white'>
+			<View className='flex-1 items-center justify-center'>
 				<Text>Oops!</Text>
 				<Text>{reasonError}</Text>
 			</View>
@@ -35,7 +35,7 @@ function Weather() {
 
 	if (isLoading) {
 		return (
-			<View className='flex-1 items-center justify-center bg-white'>
+			<View className='flex-1 items-center justify-center'>
 				<Text>Loading...</Text>
 			</View>
 		);
@@ -50,11 +50,11 @@ function Weather() {
 			<View className='mx-auto'>
 				<WeatherIcon icon={data.icon} />
 				<Text className='font-bold text-3xl text-center'>{data.temperature}</Text>
-				<Text className='font-light mt-2 text-center'>{data.title}</Text>
+				<Text className='font-light mt-2 text-center'>{data.description}</Text>
 			</View>
 
-			<View className='items-center'>
-				<View className='flex-row space-x-12 bg-gray-200 p-6 rounded-full'>
+			<View className='items-center space-y-4'>
+				<View className='bg-gray-200 flex-row space-x-12 p-6 rounded-full'>
 					{additioinalInfo.map(val => (
 						<View key={val}>
 							<Text className='font-semibold text-center'>{data[val]}</Text>
@@ -62,37 +62,17 @@ function Weather() {
 						</View>
 					))}
 				</View>
+
+				<View className='flex-row space-x-2'>
+					<TouchableOpacity className='items-center p-3 rounded bg-gray-900' onPress={toggleModal}>
+						<Text className='text-gray-100'>Suggest Edit</Text>
+					</TouchableOpacity>
+				</View>
 			</View>
+
+			<ModalFormSuggestEdit {...{ isOpen: isOpenModal, onClose: toggleModal }} />
 		</View>
 	);
-}
-
-function WeatherIcon({ icon = 'sunny' as IconMapValue }) {
-	const iconSize = 96;
-
-	switch (icon) {
-		case 'sunny':
-			return <FontistoIcon size={iconSize} name='day-sunny' />;
-
-		case 'cloudy':
-			return <FontistoIcon size={iconSize} name='cloudy' />;
-
-		case 'showers':
-		case 'rain':
-			return <FontistoIcon size={iconSize} name='rain' />;
-
-		case 'thunderstorms':
-			return <Ionicons size={iconSize} name='thunderstorm-outline' />;
-
-		case 'windySnow':
-			return <FontistoIcon size={iconSize} name='snowflake' />;
-
-		case 'fog':
-			return <FontistoIcon size={iconSize} name='fog' />;
-
-		default:
-			return null;
-	}
 }
 
 export default function App() {

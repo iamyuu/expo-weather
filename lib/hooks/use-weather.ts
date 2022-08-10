@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { formatTime } from '../utils/formatter';
+import { useReducerState } from './use-reducer-state';
 import type { Weather, ResponseWeather, Coord, IconMapValue } from '../types';
 
-const API_URL = 'https://api.openweathermap.org/data/2.5';
+const BASE_API_URL = 'https://api.openweathermap.org';
 
 type UseWeatherOptions = Partial<Coord> & { appId: string };
 
@@ -28,13 +29,7 @@ const initialState: UseWeatherState = {
  */
 export function useWeather(options: UseWeatherOptions) {
 	// using reducer for the state to make it easy to update the state
-	const [state, dispatch] = React.useReducer(
-		(state: UseWeatherState, newState: Partial<UseWeatherState>) => ({
-			...state,
-			...newState,
-		}),
-		initialState,
-	);
+	const [state, dispatch] = useReducerState<UseWeatherState>(initialState);
 
 	React.useEffect(() => {
 		async function doFetch() {
@@ -43,10 +38,10 @@ export function useWeather(options: UseWeatherOptions) {
 
 			try {
 				// convert the api url to `URL` to make append search params easy and readable
-				const apiEndpoint = new URL('/onecall', API_URL);
+				const apiEndpoint = new URL('/data/2.5/onecall', BASE_API_URL);
 				apiEndpoint.searchParams.append('appid', options.appId);
 				apiEndpoint.searchParams.append('units', 'metric');
-				apiEndpoint.searchParams.append('exclude', ['minutely', 'daily', 'alerts'].join(','));
+				apiEndpoint.searchParams.append('exclude', ['minutely', 'hourly', 'daily', 'alerts'].join(','));
 
 				if (options.lat) {
 					// since `lat` is a number, we need to convert it to string so we can use the `append` method
@@ -90,13 +85,13 @@ export function transform(rawData: ResponseWeather['current']): Weather {
 	const [weather] = rawData.weather;
 
 	return {
-		title: weather.description,
 		cloud: `${rawData.clouds}%`,
 		time: formatTime(rawData.dt),
 		wind: `${rawData.wind_speed} km/h`,
 		humidity: `${rawData.humidity}%`,
 		temperature: `${Math.ceil(rawData.temp)}°C`,
 		icon: iconsMap[weather.icon] ?? 'sunny',
+		description: weather.description,
 	};
 }
 

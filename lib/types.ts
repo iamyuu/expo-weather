@@ -1,11 +1,11 @@
 export interface Weather {
 	icon: IconMapValue;
-	title: string;
 	time: string;
 	wind: string;
 	cloud: string;
 	humidity: string;
 	temperature: string;
+	description: string;
 }
 
 export interface ResponseWeather {
