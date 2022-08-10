@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { View, Text, Modal, TextInput, TouchableOpacity, Alert } from 'react-native';
+import { Platform, View, Text, Modal, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { useReducerState } from '../hooks';
 
 interface ModalFormSuggestEditProps {
@@ -11,31 +11,36 @@ type FormSuggestEditField = Record<'temperature' | 'description', string>;
 
 const initialForm = {} as FormSuggestEditField;
 
+function showAlert(message: string, type: 'Success' | 'Failed' = 'Success') {
+	if (Platform.OS === 'web') alert(message);
+	else Alert.alert(type, message);
+}
+
 export function ModalFormSuggestEdit(props: ModalFormSuggestEditProps) {
 	const [isSubmitting, setIsSubmitting] = React.useState(false);
 	const [state, dispatch] = useReducerState<FormSuggestEditField>(initialForm);
 
-	function handleSuggestEdit() {
+	async function handleSuggestEdit() {
 		setIsSubmitting(true);
 
 		try {
 			console.log(`🚀 ~ ModalFormSuggestEdit ~ state`, state);
 
 			// fake async
-			new Promise(resolve => setTimeout(resolve, 2500));
+			await new Promise(resolve => setTimeout(resolve, 1500));
 
 			// reset form
 			dispatch({ temperature: '', description: '' });
 
 			// show success alert
-			Alert.alert('Success', 'Successfully submitted edit suggestions');
+			showAlert('Successfully submitted edit suggestions');
 
 			props.onClose();
 		} catch (error) {
 			const reason = error instanceof Error ? error.message : 'Internal server error';
 
 			// show error alert
-			Alert.alert('Failed', reason);
+			showAlert(reason, 'Failed');
 		} finally {
 			setIsSubmitting(false);
 		}
@@ -61,11 +66,11 @@ export function ModalFormSuggestEdit(props: ModalFormSuggestEditProps) {
 					/>
 
 					<View className='flex-row-reverse space-x-2 w-full'>
-						<TouchableOpacity className='items-center p-3 rounded bg-gray-900' disabled={isSubmitting} onPress={handleSuggestEdit}>
+						<TouchableOpacity className={['items-center p-3 rounded bg-gray-900', isSubmitting ? 'opacity-50' : ''].join(' ')} disabled={isSubmitting} onPress={handleSuggestEdit}>
 							<Text className='text-gray-100'>Suggest Edit</Text>
 						</TouchableOpacity>
 
-						<TouchableOpacity className='items-center p-3 rounded' disabled={isSubmitting} onPress={props.onClose}>
+						<TouchableOpacity className={['items-center p-3 rounded', isSubmitting ? 'opacity-50' : ''].join(' ')} disabled={isSubmitting} onPress={props.onClose}>
 							<Text className='text-gray-900'>Cancel</Text>
 						</TouchableOpacity>
 					</View>
